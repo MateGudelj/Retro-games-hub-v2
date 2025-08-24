@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LoginButton from './LoginButton';
 
 export default function Header() {
   return (
@@ -10,6 +11,7 @@ export default function Header() {
         <nav className="space-x-4">
           <Link href="/forum" className="hover:text-gray-300">Forum</Link>
           <Link href="/blog" className="hover:text-gray-300">Blog</Link>
+          <LoginButton />
         </nav>
       </div>
     </header>

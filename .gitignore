@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+#secret
+client_secret_751065039053-ibdomk33igr8h3ae8cdr59up8d6lrn25.apps.googleusercontent.com.json
+
 # vercel
 .vercel
 
