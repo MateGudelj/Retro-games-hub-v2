@@ -1,25 +1,27 @@
-// import { createClient } from '@supabase/supabase-js'
-// import { getServerSession } from 'next-auth'
+import { createClient } from '@supabase/supabase-js';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 
-// export async function getSupabaseClientAuthenticated() {
-//   const session = await getServerSession();
-//   const supabaseAccessToken = session?.supabaseAccessToken;
+// This function can be called from any server action
+export async function getAuthenticatedSupabaseClient() {
+  const session = await getServerSession(authOptions);
 
-//   if (!supabaseAccessToken) {
-//     throw new Error("User is not authenticated or Supabase access token is missing.");
-//   }
+  if (!session?.user || !session.supabaseAccessToken) {
+    throw new Error("User is not properly authenticated.");
+  }
 
-//   const supabase = createClient(
-//     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-//     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-//     {
-//       global: {
-//         headers: {
-//           Authorization: `Bearer ${supabaseAccessToken}`,
-//         },
-//       },
-//     }
-//   );
+  // Create and return a new Supabase client authenticated as the current user
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${session.supabaseAccessToken}`,
+        },
+      },
+    }
+  );
 
-//   return supabase;
-// }
+  return { supabase, session };
+}

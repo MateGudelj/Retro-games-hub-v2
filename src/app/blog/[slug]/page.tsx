@@ -4,10 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import type {
   Asset,
-  Entry,
   EntrySkeletonType,
-  EntryCollection,
-  EntriesQueries,
 } from "contentful";
 
 import type { Document } from "@contentful/rich-text-types";
@@ -88,7 +85,8 @@ export default async function BlogPostPage({
         </div>
       )}
 
-      <div className="prose lg:prose-xl max-w-none mx-auto">
+      {/* Use base 'prose' on small screens, and make it larger ('prose-lg') on large screens. */}
+      <div className="prose md:prose-lg max-w-none mx-auto">
         {content ? documentToReactComponents(content) : null}
       </div>
     </article>

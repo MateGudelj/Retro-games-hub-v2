@@ -4,7 +4,7 @@ import Link from "next/link";
 // A function to fetch all categories from the database
 async function getCategories() {
   // Supabase query to select all rows from the 'categories' table
-  const { data, error } = await supabase.from('categories').select('*');
+  const { data, error } = await supabase.from("categories").select("*");
 
   if (error) {
     console.error("Error fetching categories:", error);
@@ -28,7 +28,7 @@ export default async function ForumPage() {
             <Link
               href={`/forum/${categorySlug}`}
               key={category.id}
-              className="block border rounded-lg p-6 hover:shadow-lg transition-shadow"
+              className="block border rounded-lg p-4 md:p-6 hover:shadow-lg transition-shadow"
             >
               <h2 className="text-2xl font-semibold">{category.name}</h2>
               <p className="text-gray-600 mt-2">{category.description}</p>
