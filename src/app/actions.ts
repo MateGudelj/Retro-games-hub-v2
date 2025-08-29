@@ -5,6 +5,55 @@ import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; // For public queries
 import { getAuthenticatedSupabaseClient } from "@/lib/supabaseClientAuthenticated";
 
+export async function toggleBookmark(threadId: number) {
+  const { supabase, session } = await getAuthenticatedSupabaseClient();
+  const userId = session.user.id;
+
+  const { data: existingBookmark } = await supabase
+    .from('bookmarks')
+    .select('id')
+    .eq('thread_id', threadId)
+    .eq('user_id', userId)
+    .single();
+
+  if (existingBookmark) {
+    await supabase.from('bookmarks').delete().match({ id: existingBookmark.id });
+  } else {
+    await supabase.from('bookmarks').insert({ thread_id: threadId, user_id: userId });
+  }
+
+  // Revalidate the profile page to show the updated list
+  revalidatePath("/profile");
+  // Revalidate the thread page as well, in case we want to show a "bookmarked" state later
+  revalidatePath(`/forum/threads/${threadId}`);
+}
+
+export async function createReply(formData: FormData) {
+  const { supabase, session } = await getAuthenticatedSupabaseClient();
+
+  const content = formData.get("content") as string;
+  const threadId = formData.get("threadId") as string;
+  const userId = session.user.id;
+
+  if (!content || !threadId) {
+    throw new Error("Content and thread ID are required.");
+  }
+
+  const { error } = await supabase.from("replies").insert({
+    content: content,
+    thread_id: parseInt(threadId, 10),
+    user_id: userId,
+  });
+
+  if (error) {
+    console.error("Error creating reply:", error);
+    throw new Error("Failed to create reply.");
+  }
+
+  // Revalidate the path of the thread page to show the new reply instantly
+  revalidatePath(`/forum/threads/${threadId}`);
+}
+
 export async function searchTags(query: string) {
   if (!query) {
     return [];
@@ -35,7 +84,16 @@ export async function createThread(formData: FormData) {
   const categoryId = formData.get('categoryId') as string;
   const tagsString = formData.get('tags') as string | null; // Get the new tags string
 
-  
+   const { data: category } = await supabase
+    .from('categories')
+    .select('name')
+    .eq('id', categoryId)
+    .single();
+
+  if (category?.name.toLowerCase() === 'marketplace' && (!tagsString || tagsString.trim() === '')) {
+    // We can handle this more gracefully later, but for now, an error is fine.
+    throw new Error("Marketplace posts must have at least one tag.");
+  }
 
   // 1. Insert the thread and get its ID back
   const { data: newThread, error: threadError } = await supabase

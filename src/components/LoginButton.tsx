@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function LoginButton() {
   const { data: session, status } = useSession();
@@ -12,7 +13,9 @@ export default function LoginButton() {
   if (session) {
     return (
       <div className="flex items-center gap-4">
-        <p>{session.user?.name}</p>
+         <Link href="/profile" className="hover:underline">
+        {session.user?.name}
+      </Link>
         <button
           onClick={() => signOut()}
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
