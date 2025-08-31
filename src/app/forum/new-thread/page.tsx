@@ -38,6 +38,11 @@ export default async function NewThreadPage({
   const allTags = await getTags();
   const preselectedCategoryName = (await searchParams)?.category;
 
+  // Create a URL-friendly slug from the category name
+  const preselectedCategorySlug = preselectedCategoryName
+    ? preselectedCategoryName.toLowerCase().replace(/\s+/g, "-")
+    : "";
+
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Create a New Thread</h1>
@@ -46,6 +51,7 @@ export default async function NewThreadPage({
         categories={categories}
         allTags={allTags}
         preselectedCategoryName={preselectedCategoryName}
+        preselectedCategorySlug={preselectedCategorySlug}
       />
     </div>
   );

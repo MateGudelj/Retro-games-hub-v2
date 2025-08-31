@@ -1,102 +1,85 @@
+// src/components/NewThreadForm.tsx
 "use client";
 
 import { useState, useMemo } from "react";
 import { createThread } from "@/app/actions";
 import TagInput from './TagInput';
 
-type Category = {
-  id: number;
-  name: string;
-};
+type Category = { id: number; name: string; };
+type Tag = { id: number; name: string; };
 
-type Tag = {
-  id: number;
-  name: string;
-};
-
-
-// The component now accepts a new optional prop
-export default function NewThreadForm({  
+export default function NewThreadForm({ 
   categories, 
   allTags,
-  preselectedCategoryName 
+  preselectedCategoryName,
+  preselectedCategorySlug
 }: { 
   categories: Category[],
   allTags: Tag[],
-  preselectedCategoryName?: string 
+  preselectedCategoryName?: string,
+  preselectedCategorySlug?: string
 }) {
-
-
-  // Find the category object that matches the name from the URL
-  const preselectedCategory = useMemo(
-    () => categories.find(cat => cat.name === preselectedCategoryName),
-    [categories, preselectedCategoryName]
-  );
-
-  // Set the initial state: if a pre-selected category was found, use its ID.
-  // Otherwise, fall back to the first category in the list.
   const [categoryId, setCategoryId] = useState(
-    preselectedCategory ? preselectedCategory.id.toString() : (categories[0]?.id.toString() || '')
+    categories.find(cat => cat.name === preselectedCategoryName)?.id.toString() || categories[0]?.id.toString() || ''
   );
-
+  
+  // State to hold our validation error message
+  const [error, setError] = useState<string | null>(null);
 
   const marketplaceCategoryId = useMemo(
     () => categories.find(cat => cat.name.toLowerCase() === 'marketplace')?.id,
     [categories]
   );
-
+  
   const isMarketplaceSelected = marketplaceCategoryId !== undefined && Number(categoryId) === marketplaceCategoryId;
 
   return (
-    <form action={createThread} className="space-y-6">
-      {/* Title and Content inputs remain the same */}
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-          Title
-        </label>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-      </div>
+    // We add an onSubmit handler to the form
+    <form 
+      action={createThread} 
+      // This is the key change. We run our own check before the server action.
+      onSubmit={(event) => {
+        // We get the current value of the hidden tags input
+        const form = event.currentTarget;
+        const tagsInput = form.elements.namedItem('tags') as HTMLInputElement;
+        const tags = tagsInput.value;
 
+        // If it's a marketplace post and tags are empty, stop the submission
+        if (isMarketplaceSelected && (!tags || tags.trim() === '')) {
+          event.preventDefault(); // This stops the form from being sent to the server
+          setError("Marketplace posts require at least one tag.");
+        } else {
+          setError(null); // Clear any previous errors
+        }
+      }}
+      className="space-y-6"
+    >
+      <input type="hidden" name="categorySlug" value={preselectedCategorySlug} />
+      
+      {/* Title, Content, and Category fields will keep their values because the page won't reload */}
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-          Content
-        </label>
-        <textarea
-          name="content"
-          id="content"
-          required
-          rows={6}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
+        <label htmlFor="title">Title</label>
+        <input type="text" name="title" id="title" required className="mt-1 block w-full ..." />
       </div>
-
-      {/* The category dropdown will now use the new initial state */}
       <div>
-        <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-          Category
-        </label>
-        <select
-          name="categoryId"
-          id="category"
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        >
+        <label htmlFor="content">Content</label>
+        <textarea name="content" id="content" required rows={6} className="mt-1 block w-full ..." />
+      </div>
+      <div>
+        <label htmlFor="category">Category</label>
+        <select name="categoryId" id="category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="mt-1 block w-full ...">
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
+            <option key={category.id} value={category.id}>{category.name}</option>
           ))}
         </select>
       </div>
-
+      
       {isMarketplaceSelected && <TagInput allTags={allTags}/>}
+
+      {/* Display the error message if it exists */}
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
 
       <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
         Create Thread

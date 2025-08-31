@@ -3,11 +3,14 @@ import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LikeButton from "@/components/LikeButton";
-import SearchByTitle from '@/components/SearchByTitle';
-import TagFilter from '@/components/TagFilter';
+import SearchByTitle from "@/components/SearchByTitle";
+import TagFilter from "@/components/TagFilter";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import SortControls from "@/components/SortControls";
+import { formatTimeAgo } from '@/lib/timeUtils';
+import Notification from '@/components/Notification';
 
 // A function to get the details of a specific category by its name
 async function getCategory(slug: string) {
@@ -23,7 +26,7 @@ async function getCategory(slug: string) {
 
 // A function to fetch all available tags
 async function getTags() {
-  const { data, error } = await supabase.from('tags').select('id, name');
+  const { data, error } = await supabase.from("tags").select("id, name");
   if (error) {
     console.error("Error fetching tags:", error);
     return [];
@@ -31,19 +34,38 @@ async function getTags() {
   return data;
 }
 
-// A function to get threads with filtering
-async function getThreads(categoryId: number, tags?: string[], search?: string) {
-  let query = supabase
-    .from('threads_with_details')
-    .select('*')
-    .eq('category_id', categoryId);
+// A function to get threads
+async function getThreads(
+  categoryId: number,
+  tags?: string[],
+  search?: string,
+  sort?: string
+) {
 
+  let query = supabase
+    .from("threads_with_details")
+    .select("*")
+    .eq("category_id", categoryId);
+
+  // Apply filters
   if (tags && tags.length > 0) {
-    query = query.contains('tags', tags);
+    query = query.contains("tags", tags);
   }
-  
   if (search) {
-    query = query.ilike('title', `%${search}%`);
+    query = query.ilike("title", `%${search}%`);
+  }
+
+  // Apply sorting based on the 'sort' parameter
+  switch (sort) {
+    case "oldest":
+      query = query.order("created_at", { ascending: true });
+      break;
+    case "most-liked":
+      query = query.order("like_count", { ascending: false });
+      break;
+    default: // Default to 'newest'
+      query = query.order("created_at", { ascending: false });
+      break;
   }
 
   const { data, error } = await query;
@@ -59,28 +81,28 @@ async function getThreads(categoryId: number, tags?: string[], search?: string) 
 async function getUserBookmarks(userId: string) {
   if (!userId) return new Set();
   const { data, error } = await supabase
-    .from('bookmarks')
-    .select('thread_id')
-    .eq('user_id', userId);
+    .from("bookmarks")
+    .select("thread_id")
+    .eq("user_id", userId);
   if (error) {
     console.error("Error fetching bookmarks:", error);
     return new Set();
   }
-  return new Set(data.map(bookmark => bookmark.thread_id));
+  return new Set(data.map((bookmark) => bookmark.thread_id));
 }
 
 async function getUserLikes(userId: string) {
   if (!userId) return new Set();
   const { data, error } = await supabase
-    .from('likes')
-    .select('thread_id')
-    .eq('user_id', userId);
+    .from("likes")
+    .select("thread_id")
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching user likes:", error);
     return new Set();
   }
-  return new Set(data.map(like => like.thread_id));
+  return new Set(data.map((like) => like.thread_id));
 }
 
 // The main page component
@@ -89,11 +111,15 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ categorySlug: string }>;
-  searchParams?: Promise<{ tags?: string; search?: string }>;
+  searchParams?: Promise<{ tags?: string; search?: string; sort?: string }>;
 }) {
   const session = await getServerSession(authOptions);
-  const bookmarkedThreadIds = session?.user ? await getUserBookmarks(session.user.id) : new Set();
-  const likedThreadIds = session?.user ? await getUserLikes(session.user.id) : new Set();
+  const bookmarkedThreadIds = session?.user
+    ? await getUserBookmarks(session.user.id)
+    : new Set();
+  const likedThreadIds = session?.user
+    ? await getUserLikes(session.user.id)
+    : new Set();
 
   const { categorySlug } = await params;
   const search = await searchParams;
@@ -102,25 +128,37 @@ export default async function CategoryPage({
   if (!category) {
     notFound();
   }
-  
-  const tagsFilter = search?.tags?.split(',');
+
+  const tagsFilter = search?.tags?.split(",");
   const searchFilter = search?.search;
-  const threads = await getThreads(category.id, tagsFilter, searchFilter);
+  const sortFilter = search?.sort;
+
+  const threads = await getThreads(category.id, tagsFilter, searchFilter, sortFilter);
   const allTags = await getTags();
 
   return (
     <div className="container mx-auto p-8">
+      <Notification />
       <h1 className="text-4xl font-bold mb-2">{category.name}</h1>
       <p className="text-gray-600 mb-8">Discussion threads in this category.</p>
 
       <div className="mb-6">
-        <Link href={`/forum/new-thread?category=${encodeURIComponent(category.name)}`} className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">
+        <Link
+          href={`/forum/new-thread?category=${encodeURIComponent(
+            category.name
+          )}`}
+          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+        >
           Create New Thread
         </Link>
       </div>
 
       <SearchByTitle />
-      {category.name.toLowerCase() === 'marketplace' && <TagFilter tags={allTags} />}
+      {category.name.toLowerCase() === "marketplace" && (
+        <TagFilter tags={allTags} />
+      )}
+
+      <SortControls />
 
       <div className="space-y-4">
         {threads.length > 0 ? (
@@ -135,12 +173,17 @@ export default async function CategoryPage({
                 className="block border rounded-lg p-6 hover:shadow-lg transition-shadow"
               >
                 <h2 className="text-2xl font-semibold mb-2">{thread.title}</h2>
-                <p className="text-gray-600 mb-4 text-sm">{thread.content.substring(0, 150)}...</p>
+                <p className="text-gray-600 mb-4 text-sm">
+                  {thread.content.substring(0, 150)}...
+                </p>
 
                 {thread.tags && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {thread.tags.map((tag: string) => (
-                      <span key={tag} className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-800">
+                      <span
+                        key={tag}
+                        className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-800"
+                      >
                         {tag}
                       </span>
                     ))}
@@ -151,13 +194,23 @@ export default async function CategoryPage({
                   <span>
                     Posted by:{" "}
                     <span className="font-medium text-gray-800">
-                      {thread.author_name}
+                      {thread.author_name} •{" "}
+                      <span>
+                       {formatTimeAgo(thread.created_at)}
+                      </span>
                     </span>
                   </span>
                   <div className="flex items-center gap-4">
-                    <LikeButton threadId={thread.id} likeCount={thread.like_count} isInitiallyLiked={isLiked}/>
+                    <LikeButton
+                      threadId={thread.id}
+                      likeCount={thread.like_count}
+                      isInitiallyLiked={isLiked}
+                    />
                     {/* Pass the new prop to the button */}
-                    <BookmarkButton threadId={thread.id} isInitiallyBookmarked={isBookmarked} />
+                    <BookmarkButton
+                      threadId={thread.id}
+                      isInitiallyBookmarked={isBookmarked}
+                    />
                     <span className="font-medium text-gray-800">
                       {thread.reply_count}{" "}
                       {thread.reply_count === 1 ? "Reply" : "Replies"}

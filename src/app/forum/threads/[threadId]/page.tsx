@@ -7,6 +7,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import Link from "next/link";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { formatTimeAgo } from "@/lib/timeUtils";
+import Notification from '@/components/Notification';
 
 // A function to get a single thread by its ID
 async function getThread(threadId: string) {
@@ -52,8 +54,6 @@ async function getUserBookmarks(userId: string) {
     return new Set();
   }
 
-  
-
   // A Set is used for very fast 'has()' checks
   return new Set(data.map((bookmark) => bookmark.thread_id));
 }
@@ -61,15 +61,15 @@ async function getUserBookmarks(userId: string) {
 async function getUserLikes(userId: string) {
   if (!userId) return new Set();
   const { data, error } = await supabase
-    .from('likes')
-    .select('thread_id')
-    .eq('user_id', userId);
+    .from("likes")
+    .select("thread_id")
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching user likes:", error);
     return new Set();
   }
-  return new Set(data.map(like => like.thread_id));
+  return new Set(data.map((like) => like.thread_id));
 }
 
 export default async function ThreadPage({
@@ -87,13 +87,15 @@ export default async function ThreadPage({
   const bookmarkedThreadIds = session?.user
     ? await getUserBookmarks(session.user.id)
     : new Set();
-  const likedThreadIds = session?.user ? await getUserLikes(session.user.id) : new Set();
+  const likedThreadIds = session?.user
+    ? await getUserLikes(session.user.id)
+    : new Set();
   const isBookmarked = bookmarkedThreadIds.has(thread.id);
   const isLiked = likedThreadIds.has(thread.id);
-  
 
   return (
     <div className="container mx-auto p-8">
+      <Notification />
       {/* Main Thread Post */}
       <div className="border-b-2 pb-6 mb-6">
         <h1 className="text-4xl font-bold mb-4">{thread.title}</h1>
@@ -111,15 +113,17 @@ export default async function ThreadPage({
           </div>
         )}
         <p className="text-sm text-gray-500">
-          Posted by {thread.author_name} on{" "}
-          {new Date(thread.created_at).toLocaleDateString()} at{" "}
-          {new Date(thread.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          Posted by {thread.author_name} • {formatTimeAgo(thread.created_at)}
         </p>
-        <LikeButton threadId={thread.id} likeCount={thread.like_count} isInitiallyLiked={isLiked}/>{" "}
-        <BookmarkButton threadId={thread.id} isInitiallyBookmarked={isBookmarked} />
+        <LikeButton
+          threadId={thread.id}
+          likeCount={thread.like_count}
+          isInitiallyLiked={isLiked}
+        />{" "}
+        <BookmarkButton
+          threadId={thread.id}
+          isInitiallyBookmarked={isBookmarked}
+        />
       </div>
 
       {/* Replies Section */}
@@ -147,12 +151,8 @@ export default async function ThreadPage({
             <div key={reply.id} className="border rounded-lg p-4 bg-gray-50">
               <p className="text-gray-800">{reply.content}</p>
               <p className="text-sm text-gray-500 mt-2">
-                Posted by {reply.author_name} on{" "}
-                {new Date(reply.created_at).toLocaleDateString()} at{" "}
-                {new Date(reply.created_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                Replied by {thread.author_name} •{" "}
+                {formatTimeAgo(thread.created_at)}
               </p>
             </div>
           ))
