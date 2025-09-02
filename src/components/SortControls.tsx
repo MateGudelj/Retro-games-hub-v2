@@ -24,15 +24,15 @@ export default function SortControls({ isMarketplace = false }: { isMarketplace?
           Sort by:
         </label>
         
-        {/* --- THIS IS THE STYLED DROPDOWN --- */}
-        {/* We wrap it in a div to position our custom arrow */}
+        
+        
         <div className="relative">
           <select
             id="sort"
             name="sort"
             onChange={handleSortChange}
             defaultValue={currentSort}
-            // 1. We remove the default browser appearance
+            
             className="appearance-none rounded-md border border-slate-600 bg-slate-700 text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2 pl-3 pr-10"
           >
             <option value="newest">Newest</option>

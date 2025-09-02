@@ -17,10 +17,10 @@ export default function Header() {
           onClick={() => setIsMenuOpen(false)}
         >
           <Image
-            src="/images/logo5.png" 
+            src="/images/logo5.png"
             alt="RGH Logo"
             width={40}
-            height={40} 
+            height={40}
             className="h-8 w-auto" // Control the size with height
           />
         </Link>
@@ -75,14 +75,16 @@ export default function Header() {
             transition-all duration-300 ease-in-out
             transform origin-top
             
-            /* --- THIS IS THE CORRECTED VISIBILITY LOGIC --- */
-            ${
-              isMenuOpen
-                ? "opacity-100 scale-100 visible"
-                : "opacity-0 scale-95 invisible"
-            }
+          
+              ${
+                isMenuOpen
+                  ? "opacity-100 scale-100 visible pointer-events-auto"
+                  : "opacity-0 scale-95 invisible pointer-events-none"
+              }
+
+ 
             /* These classes ensure it's always visible and full-size on desktop */
-            md:visible md:opacity-100 md:scale-100
+            md:visible md:opacity-100 md:scale-100 md:pointer-events-auto
           `}
         >
           <Link

@@ -61,7 +61,7 @@ export default function TagFilter({ tags }: { tags: Tag[] }) {
         id="tag-search"
         value={tagSearch}
         onChange={(e) => setTagSearch(e.target.value)}
-        className="mt-1 border focus:outline-none block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 transition-all duration-300 sm:text-sm p-2"
+        className="block w-full flex-1 rounded-lg border border-slate-600  text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:border-indigo-600 focus:ring-indigo-600 transition-all duration-300 sm:text-sm p-2"
         placeholder="Search tags..."
       />
       <div className="flex items-center gap-2 overflow-x-auto py-2 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_95%,rgba(0,0,0,0))]">
