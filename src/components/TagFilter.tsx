@@ -1,4 +1,4 @@
-// src/components/TagFilter.tsx
+
 "use client";
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -40,6 +40,17 @@ export default function TagFilter({ tags }: { tags: Tag[] }) {
     tag.name.toLowerCase().includes(tagSearch.toLowerCase())
   );
 
+  // We create a new, sorted list for display purposes.
+  const sortedAndFilteredTags = [...filteredTags].sort((a, b) => {
+    const aIsActive = activeTags.includes(a.name);
+    const bIsActive = activeTags.includes(b.name);
+    // This logic ensures active tags are always sorted to the front of the list.
+    if (aIsActive && !bIsActive) return -1;
+    if (!aIsActive && bIsActive) return 1;
+    return 0;
+  });
+  
+
   return (
     <div className="space-y-2 mb-8">
       <label htmlFor="tag-search" className="block text-sm font-medium text-gray-700">
@@ -50,11 +61,12 @@ export default function TagFilter({ tags }: { tags: Tag[] }) {
         id="tag-search"
         value={tagSearch}
         onChange={(e) => setTagSearch(e.target.value)}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+        className="mt-1 border focus:outline-none block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600 transition-all duration-300 sm:text-sm p-2"
         placeholder="Search tags..."
       />
       <div className="flex items-center gap-2 overflow-x-auto py-2 [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_95%,rgba(0,0,0,0))]">
-        {filteredTags.map((tag) => (
+        
+        {sortedAndFilteredTags.map((tag) => (
           <button
             key={tag.id}
             onClick={() => handleTagClick(tag.name)}

@@ -1,4 +1,4 @@
-// src/components/ReplyForm.tsx
+
 "use client";
 
 import { createReply } from "@/app/actions";
@@ -16,23 +16,24 @@ export default function ReplyForm({ threadId }: { threadId: number }) {
       }} 
       className="space-y-4"
     >
-      {/* We add a hidden input to send the threadId along with the form */}
       <input type="hidden" name="threadId" value={threadId} />
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-          Your Reply
+        <label htmlFor="content" className="block text-sm font-medium text-slate-300">
+          
         </label>
         <textarea
           name="content"
           id="content"
           required
           rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+          // Added dark mode styling to match our other inputs
+          className="mt-1 block w-full rounded-md border border-slate-600 bg-slate-700 text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all duration-300 sm:text-sm p-2"
         />
       </div>
       <button 
         type="submit" 
-        className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+        // Updated button styles to match our theme
+        className="inline-flex justify-center rounded-lg border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-all duration-300"
       >
         Post Reply
       </button>

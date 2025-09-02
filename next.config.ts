@@ -17,6 +17,13 @@ images: {
         port: '',
         pathname: '/**',
       },
+       
+      {
+        protocol: 'https',
+        hostname: 'developers.elementor.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

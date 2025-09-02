@@ -44,7 +44,7 @@ export default async function NewThreadPage({
     : "";
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container max-w-5xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Create a New Thread</h1>
       {/* We'll pass the user's ID and the categories to the form component */}
       <NewThreadForm

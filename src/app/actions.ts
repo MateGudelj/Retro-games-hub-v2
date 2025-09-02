@@ -88,8 +88,9 @@ export async function createThread(formData: FormData) {
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
   const categoryId = formData.get("categoryId") as string;
-  const tagsString = formData.get("tags") as string | null; // Get the new tags string
+  const tagsString = formData.get("tags") as string | null; 
   const categorySlug = formData.get("categorySlug") as string;
+  const price = formData.get("price") as string | null;
 
   const { data: category } = await supabase
     .from("categories")
@@ -113,6 +114,7 @@ export async function createThread(formData: FormData) {
       content: content,
       category_id: parseInt(categoryId, 10),
       user_id: userId,
+      price: price ? parseFloat(price) : null,
     })
     .select("id") // This asks Supabase to return the 'id' of the new row
     .single(); // We expect only one row back
@@ -122,7 +124,6 @@ export async function createThread(formData: FormData) {
     throw new Error("Failed to create thread.");
   }
 
-  // --- NEW TAG LOGIC ---
   if (tagsString) {
     const tagNames = tagsString
       .split(",")

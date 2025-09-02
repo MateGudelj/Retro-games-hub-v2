@@ -1,4 +1,4 @@
-// src/components/LikeButton.tsx
+
 "use client";
 
 import { useOptimistic, useTransition } from 'react';
@@ -41,12 +41,12 @@ export default function LikeButton({
       onClick={handleLike}
       disabled={isPending}
       className={`flex items-center gap-1 text-sm disabled:opacity-50 ${
-        optimisticState.liked ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'
+        optimisticState.liked ? 'text-pink-700' : 'text-gray-500 hover:text-pink-500'
       }`}
     >
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
-        className="h-4 w-4" 
+        className="h-5 w-5" 
         // The fill is now controlled by the optimistic 'liked' state
         fill={optimisticState.liked ? "currentColor" : "none"} 
         viewBox="0 0 24 24" 

@@ -19,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
+      <body className={`${inter.className} bg-gray-950 text-slate-100 flex flex-col min-h-screen`}>
         <AuthProvider>
-          <Header /> {/* Add Header here */}
+          <Header />
           <main className="flex-grow">{children}</main>
-          <Footer /> {/* Add Footer here */}
+          <Footer /> 
         </AuthProvider>
       </body>
     </html>

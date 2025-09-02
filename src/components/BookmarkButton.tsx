@@ -1,4 +1,4 @@
-// src/components/BookmarkButton.tsx
+
 "use client";
     
 import { useOptimistic, useTransition } from 'react';
@@ -13,7 +13,7 @@ export function BookmarkButton({
 }) {
   const [isPending, startTransition] = useTransition();
   
-  // 1. Use the useOptimistic hook.
+  //  Use the useOptimistic hook.
   // It takes the "real" state (isInitiallyBookmarked) and a function to calculate the temporary state.
   const [optimisticBookmarked, setOptimisticBookmarked] = useOptimistic(
     isInitiallyBookmarked,
@@ -25,9 +25,9 @@ export function BookmarkButton({
     event.stopPropagation();
     
     startTransition(() => {
-      // 2. This now instantly tells React to show the temporary "optimistic" state.
+ 
       setOptimisticBookmarked(!optimisticBookmarked);
-      // 3. We call the server action in the background.
+
       toggleBookmark(threadId);
     });
   };
@@ -36,7 +36,7 @@ export function BookmarkButton({
     <button
       onClick={handleBookmark}
       disabled={isPending}
-      // 4. The button's style is now controlled by our optimistic state.
+      //  The button's style is now controlled by our optimistic state.
       className={`flex items-center gap-1 text-sm disabled:opacity-50 ${
         optimisticBookmarked ? 'text-yellow-500' : 'text-gray-500 hover:text-yellow-500'
       }`}

@@ -5,10 +5,10 @@ import LikeButton from "@/components/LikeButton";
 import ReplyForm from "@/components/ReplyForm";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import Link from "next/link";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { formatTimeAgo } from "@/lib/timeUtils";
-import Notification from '@/components/Notification';
+import Link from "next/link";
+import Notification from "@/components/Notification";
 
 // A function to get a single thread by its ID
 async function getThread(threadId: string) {
@@ -93,71 +93,85 @@ export default async function ThreadPage({
   const isBookmarked = bookmarkedThreadIds.has(thread.id);
   const isLiked = likedThreadIds.has(thread.id);
 
-  return (
-    <div className="container mx-auto p-8">
+return (
+    <div className="container max-w-5xl mx-auto p-4 md:p-8">
       <Notification />
-      {/* Main Thread Post */}
-      <div className="border-b-2 pb-6 mb-6">
-        <h1 className="text-4xl font-bold mb-4">{thread.title}</h1>
-        <p className="text-lg text-gray-700 mb-4">{thread.content}</p>
-        {thread.tags && thread.category_name === "Marketplace" && (
-          <div className="flex flex-wrap gap-2 pt-2 pb-4 mt-4 border-b">
+      {/* --- Main Thread Post Card --- */}
+      <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 mb-8">
+        
+        
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start items-start gap-2 sm:gap-4 mb-4">
+          
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-100 break-words min-w-0">
+            {thread.title}
+          </h1>
+          {thread.category_name === 'Marketplace' && thread.price && (
+            <span className="flex-shrink-0 inline-block rounded-lg bg-green-100 px-3 py-1 text-sm font-bold text-green-800">
+              ${thread.price}
+            </span>
+          )}
+        </div>
+
+        
+        <p className="text-slate-300 leading-relaxed break-words">
+          {thread.content}
+        </p>
+
+        {/* Tags Section  */}
+        {thread.tags && thread.category_name === 'Marketplace' && (
+           <div className="flex flex-wrap gap-2 pt-4 mt-4 border-t border-slate-700">
             {thread.tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-800"
-              >
+              <span key={tag} className="inline-block rounded-full bg-indigo-200 text-indigo-800 px-3 py-1 text-sm font-semibold">
                 {tag}
               </span>
             ))}
           </div>
         )}
-        <p className="text-sm text-gray-500">
-          Posted by {thread.author_name} • {formatTimeAgo(thread.created_at)}
-        </p>
-        <LikeButton
-          threadId={thread.id}
-          likeCount={thread.like_count}
-          isInitiallyLiked={isLiked}
-        />{" "}
-        <BookmarkButton
-          threadId={thread.id}
-          isInitiallyBookmarked={isBookmarked}
-        />
+
+        {/* Metadata Footer */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700">
+          <p className="text-sm text-slate-500">
+            
+            <span className="hidden sm:inline">Posted by </span> 
+            <span className="font-medium text-slate-300">{thread.author_name}</span> • {formatTimeAgo(thread.created_at)}
+          </p>
+          <div className="flex items-center gap-4">
+            <LikeButton threadId={thread.id} likeCount={thread.like_count} isInitiallyLiked={isLiked} />
+            <BookmarkButton threadId={thread.id} isInitiallyBookmarked={isBookmarked} />
+          </div>
+        </div>
       </div>
 
-      {/* Replies Section */}
-      <div className="mt-8 pt-8 border-t-2">
-        <h3 className="text-xl font-semibold mb-4">Post a Reply</h3>
-        {session?.user ? (
-          <ReplyForm threadId={thread.id} />
-        ) : (
-          <p className="text-gray-600">
-            You must be{" "}
-            <Link
-              href="/api/auth/signin"
-              className="text-indigo-600 hover:underline"
-            >
-              signed in
-            </Link>{" "}
-            to post a reply.
-          </p>
-        )}
-      </div>
-      <h2 className="text-2xl font-semibold mb-4">Replies</h2>
-      <div className="space-y-4">
+      {/* --- Replies Section --- */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold text-slate-100 border-b border-slate-700 pb-2">
+          {thread.reply_count} {thread.reply_count === 1 ? "Reply" : "Replies"}
+        </h2>
+        
         {replies.length > 0 ? (
           replies.map((reply) => (
-            <div key={reply.id} className="border rounded-lg p-4 bg-gray-50">
-              <p className="text-gray-800">{reply.content}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Replied by {thread.author_name} •{" "}
-                {formatTimeAgo(thread.created_at)}
+            <div key={reply.id} className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+              
+              <p className="text-slate-300 break-words">{reply.content}</p>
+              <p className="text-sm text-slate-500 mt-2 pt-2 border-t border-slate-600">
+                <span className="font-medium text-slate-300">{reply.author_name}</span> • {formatTimeAgo(reply.created_at)}
               </p>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">No replies yet.</p>
+          <p className="text-slate-500">No replies yet. Be the first to post!</p>
+        )}
+      </div>
+
+{/* --- Reply Form Section --- */}
+      <div className="mt-8 pt-8 border-t-2 border-slate-700">
+        <h3 className="text-xl font-semibold mb-4 text-slate-100">Reply to the thread</h3>
+        {session?.user ? (
+          <ReplyForm threadId={thread.id} />
+        ) : (
+          <p className="text-slate-400">
+            You must be <Link href="/api/auth/signin" className="text-blue-400 hover:underline">signed in</Link> to post a reply.
+          </p>
         )}
       </div>
     </div>

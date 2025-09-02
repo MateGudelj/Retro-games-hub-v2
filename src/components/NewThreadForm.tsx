@@ -1,4 +1,4 @@
-// src/components/NewThreadForm.tsx
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -39,40 +39,80 @@ export default function NewThreadForm({
       action={createThread} 
       // This is the key change. We run our own check before the server action.
       onSubmit={(event) => {
-        // We get the current value of the hidden tags input
-        const form = event.currentTarget;
-        const tagsInput = form.elements.namedItem('tags') as HTMLInputElement;
-        const tags = tagsInput.value;
+      // We only run the tag validation if the marketplace is selected.
+        if (isMarketplaceSelected) {
+          const form = event.currentTarget;
+          const tagsInput = form.elements.namedItem('tags') as HTMLInputElement;
+          const tags = tagsInput ? tagsInput.value : '';
 
-        // If it's a marketplace post and tags are empty, stop the submission
-        if (isMarketplaceSelected && (!tags || tags.trim() === '')) {
-          event.preventDefault(); // This stops the form from being sent to the server
-          setError("Marketplace posts require at least one tag.");
+          if (!tags || tags.trim() === '') {
+            event.preventDefault(); // Stop the form submission
+            setError("Marketplace posts require at least one tag.");
+          } else {
+            setError(null);
+          }
         } else {
-          setError(null); // Clear any previous errors
+          // For all other categories, clear any old errors.
+          setError(null);
         }
       }}
       className="space-y-6"
     >
       <input type="hidden" name="categorySlug" value={preselectedCategorySlug} />
       
-      {/* Title, Content, and Category fields will keep their values because the page won't reload */}
+
       <div>
         <label htmlFor="title">Title</label>
-        <input type="text" name="title" id="title" required className="mt-1 block w-full ..." />
+        <input type="text" name="title" id="title" required className="mt-1 border focus:outline-none block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" />
       </div>
       <div>
         <label htmlFor="content">Content</label>
-        <textarea name="content" id="content" required rows={6} className="mt-1 block w-full ..." />
+        <textarea name="content" id="content" required rows={6} className="mt-1 border focus:outline-none block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" />
       </div>
+      {isMarketplaceSelected && (
+    <div>
+      <label htmlFor="price" className="">
+        Price ($)
+      </label>
+      <input
+      required
+        type="number"
+        name="price"
+        id="price"
+        step="0.01" // Allows decimal values like 25.50
+        placeholder="e.g., 25.50"
+        className="mt-1 border focus:outline-none block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+      />
+    </div>
+  )}
       <div>
-        <label htmlFor="category">Category</label>
-        <select name="categoryId" id="category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="mt-1 block w-full ...">
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>{category.name}</option>
-          ))}
-        </select>
-      </div>
+  <label htmlFor="category" className="block text-sm font-medium text-slate-300">
+    Category
+  </label>
+
+  <div className="relative mt-1">
+    <select
+      name="categoryId"
+      id="category"
+      value={categoryId}
+      onChange={(e) => setCategoryId(e.target.value)}
+
+      className="appearance-none block w-full rounded-md border border-slate-600 bg-slate-700 text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2 pl-3 pr-10"
+    >
+      {categories.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.name}
+        </option>
+      ))}
+    </select>
+    {/* This is our custom arrow icon */}
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+</div>
       
       {isMarketplaceSelected && <TagInput allTags={allTags}/>}
 

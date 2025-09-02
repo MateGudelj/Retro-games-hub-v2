@@ -1,4 +1,4 @@
-// src/components/TagInput.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -50,19 +50,19 @@ export default function TagInput({ allTags }: TagInputProps) {
 
       <div className="flex flex-wrap items-center gap-2 p-2 min-h-[42px]">
         {selectedTags.length === 0 ? (
-          <span className="text-sm text-gray-400">No tags selected</span>
+          <span className="text-sm text-red-500">No tags selected!</span>
         ) : (
           selectedTags.map((tag) => (
-            // --- CHANGE 1: Different color for selected tags ---
+            
             <div
               key={tag.id}
-              className="flex-shrink-0 flex items-center gap-1 bg-gray-200 text-gray-800 text-sm font-medium px-2 py-1 rounded-full"
+              className="flex-shrink-0 flex items-center gap-1 bg-indigo-600 text-white text-sm font-medium px-2 py-1 rounded-full"
             >
               {tag.name}
               <button
                 type="button"
                 onClick={() => handleRemoveTag(tag)}
-                className="text-gray-600 hover:text-gray-800 font-bold"
+                className="text-white hover:text-black font-bold"
               >
                 &times;
               </button>
@@ -71,14 +71,14 @@ export default function TagInput({ allTags }: TagInputProps) {
         )}
       </div>
 
-      {/* --- CHANGE 2 & 3: Added padding to the input field --- */}
+      
       <input
         type="text"
         id="tag-search"
         value={tagSearch}
         onChange={(e) => setTagSearch(e.target.value)}
         // here is important to put border to override default browser behaviour
-        className="block w-full rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm p-2"
+        className="block w-full rounded-md border shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent   sm:text-sm p-2"
         placeholder="Search available tags to add..."
       />
 
