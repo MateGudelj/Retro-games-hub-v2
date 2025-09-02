@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AuthProvider from "@/components/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Retro Gaming Hub",
@@ -28,11 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} flex flex-col min-h-screen`}>
-        <Header /> {/* Add Header here */}
-        <main className="flex-grow">{children}</main>
-        <Footer /> {/* Add Footer here */}
+      <body className={`${inter.className} bg-gray-950 text-slate-100 flex flex-col min-h-screen`}>
+        <AuthProvider>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer /> 
+        </AuthProvider>
       </body>
     </html>
   );
