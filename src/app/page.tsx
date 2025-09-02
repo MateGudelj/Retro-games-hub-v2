@@ -15,7 +15,7 @@ export default function Home() {
                   Rediscover the Classics. Preserve history.
                 </h1>
                 <p className="max-w-[600px] text-slate-400 md:text-xl">
-                  Welcome to Retro Gaming Hub, the ultimate hub for enthusiasts of pixel-perfect classics and timeless gameplay. Whether you&aposre here to discuss legendary strategies, trade rare cartridges in our marketplace, or stay up-to-date with the latest news and mods, you&aposve found your community.
+                  Welcome to Retro Gaming Hub, the ultimate hub for enthusiasts of pixel-perfect classics and timeless gameplay. Whether you&apos;re here to discuss legendary strategies, trade rare cartridges in our marketplace, or stay up-to-date with the latest news and mods, you&apos;ve found your community.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -53,7 +53,7 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter text-slate-100 sm:text-4xl">Connect with a Passionate Community</h2>
               <p className="max-w-[600px] text-slate-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Dive into our forums to share your favorite gaming memories, ask for help on that one impossible level, or show off your carefully curated collection. From general discussions to in-depth game reviews, there&aposs a conversation waiting for you.
+                Dive into our forums to share your favorite gaming memories, ask for help on that one impossible level, or show off your carefully curated collection. From general discussions to in-depth game reviews, there&apos;s a conversation waiting for you.
               </p>
               <Link className="text-blue-400 hover:underline" href="/forum">Jump into the Discussion →</Link>
             </div>
@@ -91,7 +91,7 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter text-slate-100 sm:text-4xl">Master the Classics. Stay Informed.</h2>
               <p className="max-w-[600px] text-slate-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our blog is your source for the latest retro gaming news, in-depth guides, and hardware modding tutorials. Whether you&aposre looking for pixel-perfect strategies or a deep dive into the tech that powered a generation, our articles have you covered.
+                Our blog is your source for the latest retro gaming news, in-depth guides, and hardware modding tutorials. Whether you&apos;re looking for pixel-perfect strategies or a deep dive into the tech that powered a generation, our articles have you covered.
               </p>
               <Link className="text-blue-400 hover:underline" href="/blog">Read Our Latest Articles →</Link>
             </div>

@@ -158,7 +158,7 @@ export default async function ProfilePage() {
             })
           ) : (
             <p className="text-slate-500">
-              You haven&apos;t bookmarked any posts yet.
+              You haven&apos;;t bookmarked any posts yet.
             </p>
           )}
         </div>
