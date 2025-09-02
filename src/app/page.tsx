@@ -33,7 +33,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            {/* Image: "The Altar of Classics" - A warmly lit collection of iconic retro consoles (NES, SNES, Sega Genesis, etc.) */}
+            
             <Image
               alt="The Altar of Classics"
               className="mx-auto aspect-square overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
@@ -57,19 +57,19 @@ export default function Home() {
               </p>
               <Link className="text-blue-400 hover:underline" href="/forum">Jump into the Discussion →</Link>
             </div>
-            {/* Image: "The Digital Arcade" - An artful screenshot of your forum's UI in action, making it look vibrant. */}
+            
             <Image
-              alt="The Digital Arcade"
+              alt="RGH Community"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
               height="310"
-              src="/images/FGC_community.webp"
+              src="/images/FGC_Community.webp"
               width="550"
             />
           </div>
 
           {/* Feature 2: The Marketplace */}
           <div className="mx-auto grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
-            {/* Image: "The Rare Find" - A focused shot of a rare, desirable retro game cartridge (e.g., Chrono Trigger). */}
+            
             <Image
               alt="The Rare Find"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
@@ -95,7 +95,7 @@ export default function Home() {
               </p>
               <Link className="text-blue-400 hover:underline" href="/blog">Read Our Latest Articles →</Link>
             </div>
-            {/* Image: "The Strategy Guide" - An in-game screenshot with hand-drawn style arrows and notes on top. */}
+            
             <Image
               alt="The Strategy Guide"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
